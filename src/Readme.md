@@ -30,7 +30,7 @@ button1 = new JButton();//登录按钮
                         Connection conn=null;
                         String url="jdbc:oracle:thin:@47.113.217.47:1521:orcl";
                         Statement stmt=null;//SQL语句对象，拼SQL
-                        String sql="SELECT * FROM users WHERE username='"+username+"' AND password='"+password+"'";
+                        String sql="SELECT * FROM shopusers WHERE username='"+username+"' AND password='"+password+"'";
                         System.out.println("即将执行的sql："+sql);
                         ResultSet rs=null;
                         try {
@@ -65,6 +65,13 @@ button1 = new JButton();//登录按钮
                 }
         );
 ```
+
+
+- 登录失败：
+    1、没连上
+    2、查询的表有误导致没有自己设置的用户
+    
+    
 - MD5加密
 1、
 

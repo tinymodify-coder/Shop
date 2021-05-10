@@ -1,3 +1,5 @@
+package cn.edu.guet.ui;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,8 +72,7 @@ public class LoginForm extends JFrame {
                     }
                 }
         );
-
-        button2 = new JButton();//退出按钮
+        button2 = new JButton();
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -82,14 +83,14 @@ public class LoginForm extends JFrame {
         contentPane.add(label1);
         label1.setBounds(120, 100, 65, 25);
         contentPane.add(textField1);
-        textField1.setBounds(235, 90, 125, 40);
+        textField1.setBounds(215, 90, 125, 40);
 
         //---- label2 ----
         label2.setText("\u5bc6\u7801\uff1a");
         contentPane.add(label2);
         label2.setBounds(120, 175, 55, 25);
         contentPane.add(textField2);
-        textField2.setBounds(235, 165, 125, 40);
+        textField2.setBounds(220, 170, 125, 40);
 
         //---- button1 ----
         button1.setText("\u767b\u5f55");
@@ -117,7 +118,7 @@ public class LoginForm extends JFrame {
     private JTextField textField2;
     private JButton button1;
     private JButton button2;
-
-
     // JFormDesigner - End of variables declaration  //GEN-END:variables
+
+
 }
