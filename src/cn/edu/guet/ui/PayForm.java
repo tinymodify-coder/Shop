@@ -6,6 +6,7 @@ package cn.edu.guet.ui;
 
 import cn.edu.guet.pay.Main;
 import cn.edu.guet.util.ShowQRCode;
+import com.sun.awt.AWTUtilities;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -39,8 +40,15 @@ public class PayForm extends JFrame {
         label5 = new JLabel();
         textField4 = new JTextField();
         textField5 = new JTextField();
+        label6 = new JLabel();
+        label7 = new JLabel();
+        textField6 = new JTextField();
+        textField7 = new JTextField();
+        label8 = new JLabel();
+        textField8 = new JTextField();
 
         //======== this ========
+        setFont(new Font(Font.DIALOG, Font.BOLD | Font.ITALIC, 12));
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
 
@@ -70,21 +78,21 @@ public class PayForm extends JFrame {
 
         //---- button1 ----
         button1.setText("\u73b0\u91d1\u652f\u4ed8");
-        button1.setFont(button1.getFont().deriveFont(button1.getFont().getSize() + 10f));
+        button1.setFont(button1.getFont().deriveFont(button1.getFont().getSize() + 12f));
         contentPane.add(button1);
-        button1.setBounds(new Rectangle(new Point(10, 290), button1.getPreferredSize()));
+        button1.setBounds(new Rectangle(new Point(50, 375), button1.getPreferredSize()));
 
         //---- button2 ----
         button2.setText("\u4ed8\u6b3e\u7801\u652f\u4ed8");
-        button2.setFont(button2.getFont().deriveFont(button2.getFont().getSize() + 10f));
+        button2.setFont(button2.getFont().deriveFont(button2.getFont().getSize() + 12f));
         contentPane.add(button2);
-        button2.setBounds(new Rectangle(new Point(150, 290), button2.getPreferredSize()));
+        button2.setBounds(new Rectangle(new Point(250, 375), button2.getPreferredSize()));
 
         //---- button3 ----
         button3.setText("\u626b\u7801\u652f\u4ed8");
-        button3.setFont(button3.getFont().deriveFont(button3.getFont().getSize() + 10f));
+        button3.setFont(button3.getFont().deriveFont(button3.getFont().getSize() + 12f));
         contentPane.add(button3);
-        button3.setBounds(320, 290, 110, 35);
+        button3.setBounds(470, 375, 145, 35);
 
         //---- label4 ----
         label4.setText("\u5b9e\u4ed8\uff1a");
@@ -102,10 +110,81 @@ public class PayForm extends JFrame {
         contentPane.add(textField5);
         textField5.setBounds(165, 215, 230, 35);
 
-        contentPane.setPreferredSize(new Dimension(465, 385));
+        //---- label6 ----
+        label6.setText("\u5546\u54c1\uff1a");
+        label6.setFont(label6.getFont().deriveFont(label6.getFont().getSize() + 12f));
+        contentPane.add(label6);
+        label6.setBounds(430, 15, 80, 45);
+
+        //---- label7 ----
+        label7.setText("\u6570\u91cf\uff1a");
+        label7.setFont(label7.getFont().deriveFont(label7.getFont().getSize() + 12f));
+        contentPane.add(label7);
+        label7.setBounds(430, 65, 80, 45);
+        contentPane.add(textField6);
+        textField6.setBounds(495, 25, 230, 35);
+        contentPane.add(textField7);
+        textField7.setBounds(495, 65, 230, 35);
+
+        //---- label8 ----
+        label8.setText("\u6761\u5f62\u7801\uff1a");
+        label8.setFont(label8.getFont().deriveFont(label8.getFont().getSize() + 12f));
+        contentPane.add(label8);
+        label8.setBounds(415, 210, 115, 40);
+        contentPane.add(textField8);
+        textField8.setBounds(500, 215, 230, 35);
+
+        contentPane.setPreferredSize(new Dimension(780, 505));
         pack();
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
+        //PayCodeForm.setUndecorated(true);//去边框（就是标题栏那个框框）
+        //AWTUtilities.setWindowOpaque(PayCodeForm, false);//设置背景透明
+        //button1.setBackground(Color.white);
+
+
+
+
+        button1.addActionListener(//现金支付
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Thread t1=new Thread(
+                                new Runnable(){
+                                    @Override
+                                    public void run() {
+                                        String ze=textField1.getText();
+                                        String yh=textField2.getText();
+                                        float h=Float.parseFloat(ze) - Float.parseFloat(yh);
+                                        String str1 = String.valueOf(h);
+                                        textField3.setText(str1);
+                                    }
+                                }
+                        );
+                        Thread t2=new Thread(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String yf=textField3.getText();
+                                        String sf=textField4.getText();
+                                        float c=Float.parseFloat(sf) - Float.parseFloat(yf);
+                                        textField5.setText(String.format("%.2f", c).toString());
+                                    }
+                                }
+                        );
+
+                        t1.start();
+                        try {
+                            t1.join();//必须等t1执行完毕
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        t2.start();
+
+                    }
+                }
+        );
+
         button2.addActionListener(   //付款码支付
                 new ActionListener() {
                     @Override
@@ -116,7 +195,7 @@ public class PayForm extends JFrame {
                                     @Override
                                     public void run() {
                                         Main main = new Main();
-                                        main.test_trade_precreate();
+                                        main.test_trade_precreate(textField3.getText());
                                         //按时间顺序显示D盘下的所有png的图片
                                         //在t1线程中把最后一个图片路径拿到，然后作为参数传入
                                         java.util.List<File> qrCodeList= ShowQRCode.getFileSort("D:/Shop/二维码/");
@@ -134,6 +213,31 @@ public class PayForm extends JFrame {
                                     }
                                 }
                         );
+                        Thread t3=new Thread(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Main main = new Main();
+                                        java.util.List<File> qrCodeList = ShowQRCode.getFileSort("D:/Shop/二维码/");
+                                        String addr = qrCodeList.get(qrCodeList.size() - 1).getAbsolutePath();
+                                        String num = addr.substring(15, 49);
+                                        System.out.println(num);
+                                        while (true) {
+                                            try {
+                                                Thread.sleep(3000);
+                                            } catch (InterruptedException exception) {
+                                                exception.printStackTrace();
+                                            }
+
+                                            String result = main.test_trade_query(num);
+                                            if (result == "success") {
+                                                PayCodeForm.setVisible(false);
+                                            }
+
+                                        }
+                                    }
+                                }
+                        );
                         t1.start();
                         try {
                             t1.join();//必须等t1执行完毕
@@ -141,6 +245,13 @@ public class PayForm extends JFrame {
                             ex.printStackTrace();
                         }
                         t2.start();
+                        try {
+                            t2.join();//必须等t2执行完毕
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+
+                        t3.start();
                     }
                 }
         );
@@ -149,10 +260,12 @@ public class PayForm extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        String authCode=textField1.getText();//拿到付款条码
-                        textField1.setText("");
+                        String authCode=textField8.getText();//拿到付款条码
+                        textField8.setText("");
+                        textField4.setText(textField3.getText());
+                        textField5.setText("0");
                         Main main = new Main();
-                        main.test_trade(authCode);
+                        main.test_trade(authCode,textField3.getText());
                     }
                 }
         );
@@ -178,6 +291,12 @@ public class PayForm extends JFrame {
     private JLabel label5;
     private JTextField textField4;
     private JTextField textField5;
+    private JLabel label6;
+    private JLabel label7;
+    private JTextField textField6;
+    private JTextField textField7;
+    private JLabel label8;
+    private JTextField textField8;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
     PayCodeForm PayCodeForm=null;
 }

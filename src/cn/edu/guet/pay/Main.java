@@ -92,17 +92,17 @@ public class Main {
         //        main.test_trade_pay(tradeService);
 
         // 测试查询当面付2.0交易
-        //        main.test_trade_query();
+          //     main.test_trade_query();
 
         // 测试当面付2.0退货
         //        main.test_trade_refund();
 
         // 测试当面付2.0生成支付二维码
-        main.test_trade_precreate();
+        //main.test_trade_precreate(totalPay);
     }
 
-    public void test_trade(String authCode){
-        test_trade_pay(tradeService,authCode);
+    public void test_trade(String authCode,String totalPay){
+        test_trade_pay(tradeService,authCode,totalPay);
     }
     // 系统商的调用样例，填写了所有系统商商需要填写的字段
     public void test_monitor_sys() {
@@ -180,8 +180,8 @@ public class Main {
         dumpResponse(response);
     }
 
-    // 测试当面付2.0支付
-    public void test_trade_pay(AlipayTradeService service,String authCode) {
+    // 测试当面付2.0支付(即扫码支付)
+    public void test_trade_pay(AlipayTradeService service,String authCode,String totalPay) {
         // (必填) 商户网站订单系统中唯一订单号，64个字符以内，只能包含字母、数字、下划线，
         // 需保证商户系统端不能重复，建议通过数据库sequence生成，
         String outTradeNo = "tradepay" + System.currentTimeMillis()
@@ -192,7 +192,7 @@ public class Main {
 
         // (必填) 订单总金额，单位为元，不能超过1亿元
         // 如果同时传入了【打折金额】,【不可打折金额】,【订单总金额】三者,则必须满足如下条件:【订单总金额】=【打折金额】+【不可打折金额】
-        String totalAmount = "0.01";
+        String totalAmount = totalPay;
 
         // (必填) 付款条码，用户支付宝钱包手机app点击“付款”产生的付款条码
         //String authCode = "用户自己的支付宝付款码"; // 条码示例，286648048691290423
@@ -269,9 +269,10 @@ public class Main {
     }
 
     // 测试当面付2.0查询订单
-    public void test_trade_query() {
+    public String test_trade_query(String outTradeNo) {
         // (必填) 商户订单号，通过此商户订单号查询当面付的交易状态
-        String outTradeNo = "tradepay14817938139942440181";
+       // String outTradeNo = "tradepay14817938139942440181";
+        String messege = null;
 
         // 创建查询请求builder，设置请求参数
         AlipayTradeQueryRequestBuilder builder = new AlipayTradeQueryRequestBuilder()
@@ -291,20 +292,26 @@ public class Main {
                         log.info(bill.getFundChannel() + ":" + bill.getAmount());
                     }
                 }
+                messege="success";
                 break;
 
             case FAILED:
                 log.error("查询返回该订单支付失败或被关闭!!!");
+                messege="failed";
                 break;
 
             case UNKNOWN:
                 log.error("系统异常，订单支付状态未知!!!");
+                messege="failed";
                 break;
 
             default:
                 log.error("不支持的交易状态，交易返回异常!!!");
+                messege="failed";
                 break;
         }
+
+        return messege;
     }
 
     // 测试当面付2.0退款
@@ -351,7 +358,7 @@ public class Main {
     }
 
     // 测试当面付2.0生成支付二维码
-    public void test_trade_precreate() {
+    public void test_trade_precreate(String totalPay) {
         // (必填) 商户网站订单系统中唯一订单号，64个字符以内，只能包含字母、数字、下划线，
         // 需保证商户系统端不能重复，建议通过数据库sequence生成，
         String outTradeNo = "tradeprecreate" + System.currentTimeMillis()
@@ -362,7 +369,8 @@ public class Main {
 
         // (必填) 订单总金额，单位为元，不能超过1亿元
         // 如果同时传入了【打折金额】,【不可打折金额】,【订单总金额】三者,则必须满足如下条件:【订单总金额】=【打折金额】+【不可打折金额】
-        String totalAmount = "0.01";
+        String totalAmount = totalPay;
+        ;
 
         // (可选) 订单不可打折金额，可以配合商家平台配置折扣活动，如果酒水不参与打折，则将对应金额填写至此字段
         // 如果该值未传入,但传入了【订单总金额】,【打折金额】,则该值默认为【订单总金额】-【打折金额】
@@ -412,15 +420,17 @@ public class Main {
         switch (result.getTradeStatus()) {
             case SUCCESS:
                 log.info("支付宝预下单成功: )");
-
+                System.out.println(result.getTradeStatus());
                 AlipayTradePrecreateResponse response = result.getResponse();
                 dumpResponse(response);
-
+                System.out.println(response.getBody());
                 // 需要修改为运行机器上的路径
                 String filePath = String.format("D:/Shop/二维码/qr-%s.png",
                     response.getOutTradeNo());
                 log.info("filePath:" + filePath);
                                 ZxingUtils.getQRCodeImge(response.getQrCode(), 256, filePath);
+
+
                 break;
 
             case FAILED:
